@@ -1,14 +1,15 @@
 [![webextension-toolbox](./assets/logo-repo.png)](https://www.npmjs.com/package/webextension-toolbox)
 
 [![npm package](https://badge.fury.io/js/webextension-toolbox.svg)](https://www.npmjs.com/package/webextension-toolbox)
-[![build status](https://travis-ci.org/HaNdTriX/webextension-toolbox.svg?branch=master)](https://travis-ci.org/HaNdTriX/webextension-toolbox) 
-[![dependencies](https://img.shields.io/bithound/dependencies/github/rexxars/sse-channel.svg)](https://github.com/HaNdTriX/webextension-toolbox)
+[![build status](https://travis-ci.org/webextension-toolbox/webextension-toolbox.svg?branch=master)](https://travis-ci.org/webextension-toolbox/webextension-toolbox) 
+[![dependencies](https://david-dm.org/webextension-toolbox/webextension-toolbox/status.svg)](https://david-dm.org/webextension-toolbox/webextension-toolbox)
+[![devDependencies](https://david-dm.org/webextension-toolbox/webextension-toolbox/dev-status.svg)](https://david-dm.org/webextension-toolbox/webextension-toolbox?type=dev)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
-[![license](https://img.shields.io/npm/l/webextension-toolbox.svg)](https://github.com/HaNdTriX/webextension-toolbox/blob/master/LICENSE)
+[![license](https://img.shields.io/npm/l/webextension-toolbox.svg)](https://github.com/webextension-toolbox/webextension-toolbox/blob/master/LICENSE) [![Greenkeeper badge](https://badges.greenkeeper.io/webextension-toolbox/webextension-toolbox.svg)](https://greenkeeper.io/)
 
 Small cli toolbox for creating cross-browser WebExtensions.
 
-If you want to get started quickly check out the [yeoman generator](https://github.com/HaNdTriX/generator-web-extension) for this project.
+If you want to get started quickly check out the [yeoman generator](https://github.com/webextension-toolbox/generator-web-extension) for this project.
 
 # Browser Support
 * `chrome` (auto [polyfilled](https://github.com/mozilla/webextension-polyfill))
@@ -37,17 +38,25 @@ Allows you to define vendor specific manifest keys.
 ```
 "name": "my-extension"
 "__chrome__key": "yourchromekey"
+"__chrome|opera__key2: "yourblinkkey"
 ```
 If the vendor is `chrome` it compiles to:
 ```
 "name": "my-extension"
 "key": "yourchromekey"
+"key2": "yourblinkkey"
+```
+If the vendor is `opera` it compiles to:
+```
+"name": "my-extension"
+"key2": "yourblinkkey"
 ```
 else it compiles to:
 
 ```
 "name": "my-extension"
 ```
+
 ## polyfill
   
 The [webextension standard](https://developer.mozilla.org/de/Add-ons/WebExtensions) is currently only supported by firefox and edge. This toolbox adds the necessary polyfills for chrome and opera. 
@@ -62,7 +71,7 @@ In addition to that, this toolbox comes with <a href="https://github.com/babel/b
 ## Install
 
 ```shell
-$ npm install -g webextension-toolbox@next
+$ npm install -g webextension-toolbox
 ```
 
 ## Development
@@ -87,6 +96,17 @@ $ webextension-toolbox dev chrome
 $ webextension-toolbox dev firefox
 $ webextension-toolbox dev opera
 $ webextension-toolbox dev edge
+```
+
+Note: For Microsoft Edge, it is not allowed to connect to localhost with WebSocket. For this reason, you need to disable automatic detection for intranet network. You can do this under Internet options:
+![fix_edge_websocket](https://user-images.githubusercontent.com/1768446/39151474-a0ab6ea6-4745-11e8-8f59-b2aafd101da2.gif)
+
+or using Registry Editor (regedit):
+```
+Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap]
+"IntranetName"=dword:00000000
 ```
 
 ## Build
@@ -131,12 +151,14 @@ All javascript files located at the root of your `./app` or `./app/scripts` dire
 
 ## Customizing webpack config
 
-In order to extend our usage of `webpack`, you can define a function that extends its config via `webextension-toolbox.js`.
+In order to extend our usage of `webpack`, you can define a function that extends its config via `webextension-toolbox-config.js`.
 
 ```js
 // This file is not going through babel transformation.
 // So, we write it in vanilla JS
 // (But you could use ES2015 features supported by your Node.js version)
+const webpack = require('webpack')
+
 module.exports = {
   webpack: (config, { dev, vendor }) => {
     // Perform customizations to webpack config

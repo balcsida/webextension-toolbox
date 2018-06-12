@@ -171,6 +171,7 @@ module.exports = function webpackConfig ({
   if (mode === 'production') {
     config.plugins.push(new UglifyJsPlugin({
       parallel: true,
+      sourceMap: !!devtool,
       uglifyOptions: {
         ecma: 8
       }
@@ -197,6 +198,18 @@ module.exports = function webpackConfig ({
       filename: `${name}.v${version}.${vendor}.${getExtensionFileType(vendor)}`
     }))
   }
+
+  // Disable webpacks usage of eval by disabling nodes global
+  // @url https://github.com/webpack/webpack/blob/master/buildin/global.js
+  config.node = {
+    global: false
+  }
+  // In order to still be able to use global we use window instead
+  config.plugins.push(
+    new webpack.ProvidePlugin({
+      global: require.resolve('./utils/global.js')
+    })
+  )
 
   config.plugins.push(new WebpackBar())
 
